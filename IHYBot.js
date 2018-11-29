@@ -26,14 +26,29 @@ client.on('message', function(message) {
 client.on('message', message => {
     if (message.content.startsWith(prefix + "setgame")) {
         if (message.member.id != '183549541470044161') {
-            return message.channel.sendMessage("Seul un administrateur du bot peut exécuter cette commande :warning: ")
+            return message.channel.sendMessage("Seul un administrateur du bot peut exécuter cette commande :warning:")
         } else {
         var args = message.content.substring(prefix.length).split(" ");
         let game = args.slice(1).join(' ')   
-        message.channel.send(`Description mis à jour :` + game)
-    client.user.setActivity(game)
+        if (!game) {
+            var ErreurGame = new Discord.RichEmbed()
+            .setAuthor(message.author.username, message.author.avatarURL)
+            .setTitle(`Fail ! ❌`)
+            .addField(`Senki, please add a text to set in my description`,`My description haven't been modified.`)
+            .setColor(0xff4c4c);
+            message.channel.send(ErreurGame)
+        } else {
+            var GameSucces = new Discord.RichEmbed()
+            .setAuthor(message.author.username, message.author.avatarURL)
+            .setTitle(`Succès ! ✔️`)
+            .addField(`Description updated ! :`,`${game}`)
+            .setColor(0x4274f3);
+    message.channel.send(GameSucces)
+    client.user.setActivity(game, { type: 'PLAYING' });
+    
         }
     }
+}
 });
 client.on('message', async message => {
 	    console.log(`Content : ${  message.content}`);
@@ -376,5 +391,42 @@ var randomAnswer = answers[Math.floor(Math.random() * answers.length)];
                 }
             }
 });
-	        
+client.on('message', message => {
+    if (message.content.startsWith(`${prefix}info`)) {
+let memberInfo = message.mentions.members.first();
+
+if(!memberInfo){
+    message.delete()
+  var userinf = new Discord.RichEmbed()
+      .setAuthor(message.author.username)
+      .setThumbnail(message.author.avatarURL)
+      .setDescription(`Your informations, ${message.author} !`)
+      .setColor(0x02e427)
+      .addField("Full Username:", `${message.author.username}#${message.author.discriminator}`)
+      .addField("ID:", message.author.id)
+      .addField("Status :", message.author.presence.status)
+      .addField("Last message :", message.author.lastMessage)
+      .setFooter("Your join date : ")
+      .setTimestamp(message.member.joinedTimestamp)
+
+      message.channel.send(userinf);
+
+}else{
+
+  var userinfoo = new Discord.RichEmbed()
+      .setAuthor(memberInfo.displayName)
+      .setThumbnail(memberInfo.user.avatarURL)
+      .setDescription(`User informations : ${memberInfo.user} !`)
+      .setColor(0x02e427)
+      .addField("Full username :", `${memberInfo.user.username}#${memberInfo.user.discriminator}`)
+      .addField("ID :", memberInfo.id)
+      .addField("Status :", memberInfo.presence.status)
+      .addField("Last message :", memberInfo.user.lastMessage)
+      .setFooter("Join date :")
+      .setTimestamp(memberInfo.joinedTimestamp)
+
+      message.channel.send(userinfoo);
+}
+}
+});	        
 client.login(process.env.BOT_TOKEN);
